@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OfficeFlow
 
-## Getting Started
+A full-stack office scheduling and resource management system.
 
-First, run the development server:
+## Architecture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+OfficeFlow/
+├── server.js              ← Standalone Express.js backend (port 4000)
+├── src/
+│   ├── app/               ← Next.js frontend pages
+│   ├── repositories/      ← Database access layer (Prisma + SQLite)
+│   ├── services/          ← Business logic
+│   ├── validations/       ← Zod input validation
+│   ├── utils/             ← Helpers (auth, errors, response)
+│   └── lib/
+│       ├── prisma.js      ← Prisma client singleton
+│       └── db.js          ← Frontend API client wrapper
+├── prisma/
+│   ├── schema.prisma      ← Database schema
+│   ├── dev.db             ← SQLite database file
+│   └── seed.js            ← Seed initial data
+└── .env                   ← Environment variables
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How to Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You need **two terminal windows** — one for the backend, one for the frontend.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Terminal 1 — Start the Backend API
+```bash
+npm run backend
+```
+> API will be available at: **http://localhost:4000**
 
-## Learn More
+### Terminal 2 — Start the Frontend
+```bash
+npm run dev
+```
+> Frontend will be available at: **http://localhost:3000**
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API Endpoints
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Method | Endpoint                        | Description              |
+|--------|---------------------------------|--------------------------|
+| GET    | `/api/health`                   | Health check             |
+| POST   | `/api/auth/login`               | Login (sets cookie)      |
+| POST   | `/api/auth/logout`              | Logout                   |
+| GET    | `/api/users`                    | List all users           |
+| GET    | `/api/users/:id/notifications`  | Get user notifications   |
+| GET    | `/api/rooms`                    | List all rooms           |
+| POST   | `/api/rooms`                    | Create a room            |
+| PUT    | `/api/rooms/:id`                | Update a room            |
+| DELETE | `/api/rooms/:id`                | Delete a room            |
+| GET    | `/api/resources`                | List all resources       |
+| POST   | `/api/resources`                | Create a resource        |
+| PUT    | `/api/resources/:id`            | Update a resource        |
+| DELETE | `/api/resources/:id`            | Delete a resource        |
+| GET    | `/api/meetings`                 | List all meetings        |
+| POST   | `/api/meetings`                 | Book a meeting           |
+| PUT    | `/api/meetings/:id`             | Update a meeting         |
+| DELETE | `/api/meetings/:id`             | Cancel a meeting         |
 
-## Deploy on Vercel
+## Database
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Powered by **Prisma ORM** + **SQLite** (`prisma/dev.db`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Reset & re-seed the database
+npm run db:seed
+
+# View schema
+cat prisma/schema.prisma
+
+# Open Prisma Studio (visual DB browser)
+npx prisma studio
+```
+
+## Demo Accounts
+
+| Email                       | Role     |
+|-----------------------------|----------|
+| admin@officeflow.com        | Admin    |
+| manager@officeflow.com      | Manager  |
+| employee@officeflow.com     | Employee |

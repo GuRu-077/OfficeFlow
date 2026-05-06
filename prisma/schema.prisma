@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  role       String   @default("Employee")
+  department String?
+  status     String   @default("active")
+  createdAt  DateTime @default(now())
+
+  meetings       Meeting[] @relation("RequestedMeetings")
+  notifications  Notification[]
+}
+
+model Room {
+  id           String   @id @default(cuid())
+  name         String
+  capacity     Int
+  location     String
+  floor        String
+  amenities    String   @default("[]") // stored as JSON string
+  availability String   @default("available")
+  status       String   @default("active")
+
+  meetings     Meeting[]
+}
+
+model Resource {
+  id             String @id @default(cuid())
+  name           String
+  type           String
+  quantity       Int
+  availableCount Int
+  status         String @default("active")
+}
+
+model Meeting {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  date           String
+  startTime      String
+  endTime        String
+  status         String   @default("pending")
+  requestedBy    String
+  organizerId    String?
+  participantIds String   @default("[]") // stored as JSON string
+  resourceIds    String   @default("[]") // stored as JSON string
+  roomId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  room       Room   @relation(fields: [roomId], references: [id])
+  requester  User   @relation("RequestedMeetings", fields: [requestedBy], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
